@@ -1,0 +1,12 @@
+.global {
+  padding: 30px;
+  margin: 10px;
+  text-align: center;
+  background-color: #FF0;
+}
+.fragment {
+  padding: 30px;
+  margin: 10px;
+  text-align: right;
+  background-color: #F00;
+}
