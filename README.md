@@ -11,3 +11,4 @@ Then, in separate shells:
     cd fragment_<x>
     node server.js
 
+Then open http://localhost:8080/index in a browser.
