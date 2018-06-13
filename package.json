@@ -1,0 +1,27 @@
+{
+  "name": "docker-tailor-sample",
+  "version": "0.1.0",
+  "description": "Sample Docker application using Zalando Tailor",
+  "keywords": [
+    "tailor",
+    "layout service",
+    "streaming templates",
+    "node-tailor"
+  ],
+  "scripts": {},
+  "pre-commit": [],
+  "engines": {
+    "node": ">6.0.0"
+  },
+  "author": "Andreas Badelt",
+  "license": "MIT",
+  "dependencies": {
+    "node-tailor": "^3.7.1"
+  },
+  "devDependencies": {},
+  "files": [
+    "server.js",
+    "templates",
+    "README.md"
+  ]
+}
