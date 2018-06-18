@@ -11,8 +11,8 @@ const jsHeaders = {
 };
 
 var templatesPath = __dirname + '/templates';
-if (fs.existsSync("/fabricstorage")) {
-    templatesPath = '/fabricstorage';
+if (fs.existsSync("/templatestore")) {
+    templatesPath = '/templatestore';
 }
 const tailor = new Tailor({
     templatesPath: templatesPath
