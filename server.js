@@ -2,11 +2,20 @@
 
 const http = require('http');
 const fs = require('fs');
-
+const nodeStatic = require('node-static');
+const fileServer = new nodeStatic.Server('./assets');
 const Tailor = require('node-tailor');
+const jsHeaders = {
+    'Content-Type': 'application/javascript',
+    'Access-Control-Allow-Origin': '*'
+};
 
+var templatesPath = __dirname + '/templates';
+if (fs.existsSync("/fabricstorage")) {
+    templatesPath = '/fabricstorage';
+}
 const tailor = new Tailor({
-    templatesPath: __dirname + '/templates'
+    templatesPath: templatesPath
     // The place to define a custom Opentracing tracer like Jaeger, for ex.
     // tracer: initTracer(config, options)
 });
@@ -15,14 +24,8 @@ const tailor = new Tailor({
 http
     .createServer((req, res) => {
         console.log('Incoming request for : ' + req.url);
-        if (req.url.endsWith('fake.css')) {
-            res.writeHead(200, { 'Content-Type': 'text/css' });
-            var content = fs.readFileSync("css/fake.css");
-            res.end(content);
-        } else if (req.url.endsWith('.css')) {
-            res.writeHead(200, { 'Content-Type': 'text/css' });
-            var content = fs.readFileSync("css/base.css");
-            res.end(content);
+        if (req.url.startsWith('/images/') || req.url.startsWith('/css/') || req.url.startsWith('/js/')) {
+            fileServer.serve(req, res);
         } else {
             tailor.requestHandler(req, res);
         }
