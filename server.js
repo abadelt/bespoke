@@ -11,8 +11,8 @@ const jsHeaders = {
 };
 
 var templatesPath = __dirname + '/templates';
-if (fs.existsSync("/fabricstorage")) {
-    templatesPath = '/fabricstorage';
+if (fs.existsSync(__dirname + '/fabricstore')) {
+    templatesPath = __dirname + '/fabricstore';
 }
 const tailor = new Tailor({
     templatesPath: templatesPath
@@ -32,6 +32,6 @@ http
     })
     .listen(8080, function() {
         console.log('Tailor server listening on port 8080');
-        console.log('Template path: ' + __dirname + '/templates');
+        console.log('Template path is: ' + templatesPath);
     });
 
