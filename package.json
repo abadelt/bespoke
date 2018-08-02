@@ -2,6 +2,7 @@
   "name": "docker-tailor-sample",
   "version": "0.1.0",
   "description": "Sample Docker application using Zalando Tailor",
+  "main": "server.js",
   "keywords": [
     "tailor",
     "layout service",
@@ -14,10 +15,11 @@
     "node": ">6.0.0"
   },
   "author": "Andreas Badelt",
-  "license": "MIT",
+  "license": "",
   "dependencies": {
     "node-tailor": "^3.7.1",
-    "node-static": "^0.7.10"
+    "node-static": "^0.7.10",
+    "mongodb": "^2.1.16"
   },
   "devDependencies": {},
   "files": [
