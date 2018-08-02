@@ -11,7 +11,7 @@ const jsHeaders = {
 };
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
+    ip   = process.env.HOST_NAME   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
 
@@ -84,48 +84,59 @@ initDb(function(err) {
     console.log('Init DB Error: ' + err)
 });
 
+var writeResponse = function(response, statusCode, text, logText) {
+
+    if (logText) {
+        console.log(logText);
+    } else {
+        console.log("[" + statusCode + "] " + text);
+    }
+    response.statusCode = statusCode;
+    response.setHeader('Content-Type', 'text/html');
+    response.write('<html><body>' + text + '</body></html>');
+    response.end();
+    console.log("RESPONSE: " + response.toString());
+}
 
 // Create Root Server
-http
-    .createServer((req, res) => {
-        console.log('Incoming request for : ' + req.url);
-        if (req.url.startsWith('/images/') || req.url.startsWith('/assets/') || req.url.startsWith('/css/') || req.url.startsWith('/js/')) {
-            fileServer.serve(req, res);
-        } else {
-            if (!db) {
-                return tailor.requestHandler(req, res);
-            }
+const server = http.createServer().listen(port, function() {
+    console.log('Tailor server listening on port ' + port);
+    console.log('Template path is: ' + templateRoot);
+});
 
-            var templateUrlPath = req.url.substr(1); // remove leading "/"
-            if (templateUrlPath.length == 0) {
-                templateUrlPath = "index"
-            }
-            var templateFilePath = templateUrlPath + ".html";
-
-            db.collection('template').find({ fileName: { $eq: templateFilePath}}).sort({ created: -1 }).limit(1).toArray(function(err, items) {
-                if (err) {
-                    console.log('Error in find: ' + err);
-                    tailor.requestHandler(req, res);
-                    return;
-                }
-                if (items.length < 1 || !items[0]) {
-                    console.log('No template found in DB. Continuing with what is in the file system...' );
-                    tailor.requestHandler(req, res);
-                } else {
-                    var template = items[0];
-                    console.log('Before writeFile to ' + templateRoot + templateUrlPath);
-                    fs.writeFile(templateRoot + templateFilePath, template.content, function (err, success) {
-                        if (err) {
-                            console.log('Error writing template file: ' + err);
-                        }
-                        tailor.requestHandler(req, res);
-                    });
-                }
-            });
+server.on('request', (req, res) => {
+    console.log('Incoming request for : ' + req.url);
+    if (req.url.startsWith('/images/') || req.url.startsWith('/assets/') || req.url.startsWith('/css/') || req.url.startsWith('/js/')) {
+        fileServer.serve(req, res);
+    } else if (req.url.startsWith('/refresh-templates')) {
+        if (!db) {
+            return tailor.requestHandler(req, res);
         }
-    })
-    .listen(port, function() {
-        console.log('Tailor server listening on port ' + port);
-        console.log('Template path is: ' + templateRoot);
-    });
+        db.collection('template').find({ latest: true }).toArray(function(err, items) {
+            if (err) {
+                return writeResponse(res, 500, "Error while querying database: " + err);
+            }
+            if (items.length < 1) {
+                return writeResponse(res, 422, 'No template found in DB.' );
+            } else {
+                var errors = "";
+                items.forEach(function (template) {
+                    console.log('Before writeFile to ' + template.fileName);
+                    fs.writeFile(templateRoot + template.fileName, template.content, function (err, success) {
+                        if (err) {
+                            errors += "Error writing template file: " + err + "\n";
+                        }
+                    });
+                });
+                if (errors.length > 0) {
+                    return writeResponse(res, 500, errors);
+                }
+                return writeResponse(res, 205, 'Templates refreshed.' );
+            }
+        });
+    } else {
+        tailor.requestHandler(req, res);
+    }
+});
+
 
