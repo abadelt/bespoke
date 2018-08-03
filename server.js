@@ -111,7 +111,6 @@ var writeResponse = function(response, statusCode, text, logText) {
     response.setHeader('Content-Type', 'text/html');
     response.write('<html><body>' + text + '</body></html>');
     response.end();
-    console.log("RESPONSE: " + response.toString());
 }
 
 // Create Root Server
@@ -147,7 +146,7 @@ server.on('request', (req, res) => {
                 if (errors.length > 0) {
                     return writeResponse(res, 500, errors);
                 }
-                return writeResponse(res, 205, 'Templates refreshed.' );
+                return writeResponse(res, 200, 'Templates refreshed.' );
             }
         });
     } else {
