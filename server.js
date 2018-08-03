@@ -21,12 +21,16 @@ if (fs.existsSync(__dirname + '/templatestore')) {
     templateRoot = __dirname + '/templatestore/';
 }
 
-var mongoServiceName = process.env.DATABASE_SERVICE_NAME.toUpperCase()
 console.log('ENV parameters:');
-console.log('DATABASE_SERVICE_NAME=' + mongoServiceName);
-console.log(mongoServiceName+'_SERVICE_HOST=' + process.env[mongoServiceName + '_SERVICE_HOST']);
-console.log(mongoServiceName+'_SERVICE_PORT=' + process.env[mongoServiceName + '_SERVICE_PORT']);
-console.log(mongoServiceName+'_DATABASE=' + process.env[mongoServiceName + '_DATABASE']);
+if (process.env.DATABASE_SERVICE_NAME) {
+    var mongoServiceName = process.env.DATABASE_SERVICE_NAME.toUpperCase()
+    console.log('DATABASE_SERVICE_NAME=' + mongoServiceName);
+    console.log(mongoServiceName+'_SERVICE_HOST=' + process.env[mongoServiceName + '_SERVICE_HOST']);
+    console.log(mongoServiceName+'_SERVICE_PORT=' + process.env[mongoServiceName + '_SERVICE_PORT']);
+    console.log(mongoServiceName+'_DATABASE=' + process.env[mongoServiceName + '_DATABASE']);
+} else {
+    console.log('No DATABASE_SERVICE_NAME defined.');
+}
 
 
 if (mongoURL == null && mongoServiceName) {
