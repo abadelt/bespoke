@@ -45,13 +45,19 @@ var db = null,
     dbDetails = new Object();
 
 var initDb = function(callback) {
-    if (mongoURL == null) return;
+    console.log('Connecting to DB: ' + mongoURLLabel);
+
+    if (mongoURL == null) {
+        console.log('Cannot connect to to DB: mongoURL == null.');
+        return;
+    }
 
     var mongodb = require('mongodb');
 
-    if (mongodb == null) return;
-
-    console.log('Connecting to DB: ' + mongoURLLabel);
+    if (mongodb == null) {
+        console.log("Cannot connect to to DB: require('mongodb') returns null.");
+        return;
+    }
 
     mongodb.connect(mongoURL, function(err, conn) {
         if (err) {
