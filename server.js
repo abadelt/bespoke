@@ -51,7 +51,7 @@ var initDb = function(callback) {
 
     if (mongodb == null) return;
 
-    console.log('Connecting to DB...');
+    console.log('Connecting to DB: ' + mongoURLLabel);
 
     mongodb.connect(mongoURL, function(err, conn) {
         if (err) {
@@ -67,7 +67,7 @@ var initDb = function(callback) {
         dbDetails.url = mongoURLLabel;
         dbDetails.type = 'MongoDB';
 
-        console.log('Connected to MongoDB at: %s', mongoURL);
+        console.log('Connected to MongoDB at: %s', mongoURLLabel);
     });
 };
 
